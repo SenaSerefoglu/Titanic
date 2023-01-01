@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Importing the dataset
-testDB = pd.read_csv('test.csv')
+testDB = pd.read_csv('testt.csv')
 trainDB = pd.read_csv('train.csv')
 
 # Dropping the columns that are not needed
