@@ -87,4 +87,4 @@ y_pred = model.predict(test)
 # Creating a csv file with the predictions with headers 'PassengerId' and 'Survived'
 predictions = pd.DataFrame({'PassengerId': testDB['PassengerId'], 'Survived': y_pred})
 predictions.to_csv('predictions.csv', index=False)
-print("Our predictions acuracy is:  0.76555\nCalculated by Kaggle" )
+print("Our predictions acuracy is:  0.76555\nCalculated by Kaggle")
