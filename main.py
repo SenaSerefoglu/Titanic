@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from sklearn.linear_model import LogisticRegression
+
 
 # Importing the dataset
 testDB = pd.read_csv('test.csv')
@@ -15,11 +17,11 @@ trainDB = trainDB.drop(['Ticket', 'Cabin', 'Fare', 'Embarked', 'Name'], axis=1)
 testDB["Age"] = testDB["Age"].replace(np.NaN, testDB["Age"].mean())
 trainDB["Age"] = trainDB["Age"].replace(np.NaN, trainDB["Age"].mean())
 
-# checking for NaN values
+# Checking for NaN values
 # print(testDB.isnull().sum())
 # print(trainDB.isnull().sum())
 
-# visualizing the data of the training set with columns 'Pclass' and 'Survived'
+# Visualizing the data of the training set with columns 'Pclass' and 'Survived'
 fig, ax = plt.subplots()
 Pclass = trainDB.groupby('Pclass').Survived.sum()*100/trainDB.groupby('Pclass').Survived.count()
 ax.bar(Pclass.index, Pclass.values)
@@ -29,7 +31,7 @@ ax.set_xlabel('Pclass')
 ax.set_ylabel('Survived Percentage')
 ax.set_title('Pclass vs Survived')
 
-# visualizing the data of the training set with columns Sex and Survived
+# Visualizing the data of the training set with columns Sex and Survived
 fig, ax = plt.subplots()
 Sex = trainDB.groupby('Sex').Survived.sum()*100/trainDB.groupby('Sex').Survived.count()
 ax.bar(Sex.index, Sex.values)
@@ -39,7 +41,7 @@ ax.set_xlabel('Sex')
 ax.set_ylabel('Survived Percentage')
 ax.set_title('Sex vs Survived')
 
-# visualizing the data of the training set with columns 'Age' and 'Survived'
+# Visualizing the data of the training set with columns 'Age' and 'Survived'
 fig, ax = plt.subplots(figsize=(12, 4))
 Age = trainDB.groupby('Age').Survived.sum()*100/trainDB.groupby('Age').Survived.count()
 ax.bar(Age.index.astype(int), Age.values, width=0.5)
@@ -48,7 +50,7 @@ ax.set_xlabel('Age')
 ax.set_ylabel('Survived Percentage')
 ax.set_title('Age vs Survived')
 
-# visualizing the data of the training set with columns 'SibSp' and 'Survived'
+# Visualizing the data of the training set with columns 'SibSp' and 'Survived'
 fig, ax = plt.subplots()
 SibSp = trainDB.groupby('SibSp').Survived.sum()*100/trainDB.groupby('SibSp').Survived.count()
 ax.bar(SibSp.index, SibSp.values)
@@ -58,7 +60,7 @@ ax.set_xlabel('SibSp')
 ax.set_ylabel('Survived Percentage')
 ax.set_title('SibSp vs Survived')
 
-# visualizing the data of the training set with columns 'Parch' and 'Survived'
+# Visualizing the data of the training set with columns 'Parch' and 'Survived'
 fig, ax = plt.subplots()
 Parch = trainDB.groupby('Parch').Survived.sum()*100/trainDB.groupby('Parch').Survived.count()
 ax.bar(Parch.index, Parch.values)
@@ -70,3 +72,19 @@ ax.set_title('Parch vs Survived')
 
 # Showing the plots
 plt.show()
+
+# Logistic Regression Model
+x = trainDB.drop(['Survived'], axis=1)
+y = trainDB['Survived']
+x = pd.get_dummies(x)
+test = pd.get_dummies(testDB)
+
+model = LogisticRegression()
+model.fit(x, y)
+
+y_pred = model.predict(test)
+
+# Creating a csv file with the predictions with headers 'PassengerId' and 'Survived'
+predictions = pd.DataFrame({'PassengerId': testDB['PassengerId'], 'Survived': y_pred})
+predictions.to_csv('predictions.csv', index=False)
+print("Our predictions acuracy is:  0.76555\nCalculated by Kaggle" )
