@@ -9,8 +9,7 @@ def finish():
     print("Game Over")
     exit(0)
 
-
-def random_passanger():
+def random_passenger():
     index = random.randint(0, len(passengers))
     return passengers.iloc[index]
 
@@ -20,26 +19,26 @@ def guess():
     print("\n\n")
     print("Welcome to the Titanic Survival Predictor")
     print("You have to survive the Titanic crash!!!")
-    print("You must predict the survival of the passengers")
+    print("You have to estimate the survival of the passengers")
     print("You have 2 lives")
-    print("Every true prediction gives you 100 point")
-    print("When you lose all of your lives, you can buy attiributes to increase your chance of survival")
+    print("Every true prediction gives you 100 points")
+    print("When you lose all of your lives, you can buy attributes to increase your chance of survival")
     print("Lets start the game!!")
     print()
     while 1:
-        passanger = random_passanger()
-        print("Passanger details;")
-        print("Passanger ID: ", passanger['PassengerId'])
-        print("Passanger Age: ", int(passanger['Age']))
-        print("Passanger Sex: ", passanger['Sex'])
-        print("Passanger Pclass: ",passanger['Pclass'])
-        print("Passanger SibSp: ", passanger['SibSp'])
-        print("Passanger Parch: ", passanger['Parch'])
+        passenger = random_passenger()
+        print("Passenger details;")
+        print("Passenger ID: ", passenger['PassengerId'])
+        print("Passenger Age: ", int(passenger['Age']))
+        print("Passenger Sex: ", passenger['Sex'])
+        print("Passenger Pclass: ",passenger['Pclass'])
+        print("Passenger SibSp: ", passenger['SibSp'])
+        print("Passenger Parch: ", passenger['Parch'])
         print()
         answer = input("Do you think this passenger can survive? (y/n): ")
         print("\n\n")
         if answer == 'y':
-            if passanger['Survived'] == 1:
+            if passenger['Survived'] == 1:
                 print("Correct")
                 points += 100
             else:
@@ -48,7 +47,7 @@ def guess():
                 if lives == 0:
                     break
         elif answer == 'n':
-            if passanger['Survived'] == 0:
+            if passenger['Survived'] == 0:
                 print("Correct")
                 points += 100
             else:
@@ -70,7 +69,7 @@ def choices(name, passenger):
     global points
     if name == 'age':
         if points < 50:
-            print("You dont have enough points")
+            print("You don't have enough points")
         else:
             points -= 50
             newage = int(input("Enter your new age: "))
@@ -78,7 +77,7 @@ def choices(name, passenger):
             print("Now you have ", points, " points\n")
     elif name == 'sex':
         if points < 100:
-            print("You dont have enough points\n")
+            print("You don't have enough points\n")
         else:
             points -= 100
             if passenger['Sex'].any() == 'female':
@@ -88,7 +87,7 @@ def choices(name, passenger):
             print("Now you have ", points, " points\n")
     elif name == 'pclass':
         if points < 50:
-            print("You dont have enough points\n")
+            print("You don't have enough points\n")
         else:
             points -= 50
             newpclass = int(input("Enter your new passenger class: (1/2/3): "))
@@ -96,7 +95,7 @@ def choices(name, passenger):
             print("Now you have ", points, " points\n")
     elif name == 'sibsp':
         if points < 50:
-            print("You dont have enough points\n")
+            print("You don't have enough points\n")
         else:
             points -= 50
             newsibsp = int(input("Enter your new sibling/spouse count: "))
@@ -104,7 +103,7 @@ def choices(name, passenger):
             print("Now you have ", points, " points\n")
     elif name == 'parch':
         if points < 50:
-            print("You dont have enough points\n")
+            print("You don't have enough points\n")
         else:
             points -= 50
             newparch = int(input("Enter your parent/children count: "))
@@ -153,11 +152,11 @@ def buy():
     if choice == 'y':
         choices('parch', passenger)
     print("Your final attributes:")
-    print("Age: ", passenger['Age'])
-    print("Sex: ", passenger['Sex'])
-    print("Passenger Class: ", passenger['Pclass'])
-    print("Siblings/Spouses: ", passenger['SibSp'])
-    print("Parents/Children: ", passenger['Parch'])
+    print("Age: ", passenger.iloc[0]['Age'])
+    print("Sex: ", passenger.iloc[0]['Sex'])
+    print("Passenger Class: ", passenger.iloc[0]['Pclass'])
+    print("Siblings/Spouses: ", passenger.iloc[0]['SibSp'])
+    print("Parents/Children: ", passenger.iloc[0]['Parch'])
     if passenger['Sex'].any() == 'female':
         passenger['Sex_female'] = 1
         passenger['Sex_male'] = 0
@@ -165,7 +164,6 @@ def buy():
         passenger['Sex_female'] = 0
         passenger['Sex_male'] = 1
     passenger.drop('Sex', axis=1, inplace=True)
-    print(passenger)
     prediction = model.predict(passenger)
     print("Now lets see if you survived")
     time.sleep(3)
@@ -173,6 +171,7 @@ def buy():
         print("Congratulations. You survived")
     else:
         print("You died. Better luck next time (if there is a next time)")
+    finish()
 
 
 buy()
