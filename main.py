@@ -21,65 +21,13 @@ trainDB["Age"] = trainDB["Age"].replace(np.NaN, trainDB["Age"].mean())
 # print(testDB.isnull().sum())
 # print(trainDB.isnull().sum())
 
-# Visualizing the data of the training set with columns 'Pclass' and 'Survived'
-fig, ax = plt.subplots()
-Pclass = trainDB.groupby('Pclass').Survived.sum()*100/trainDB.groupby('Pclass').Survived.count()
-ax.bar(Pclass.index, Pclass.values)
-ax.set(ylim=(0, 100))
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.set_xlabel('Pclass')
-ax.set_ylabel('Survived Percentage')
-ax.set_title('Pclass vs Survived')
-
-# Visualizing the data of the training set with columns Sex and Survived
-fig, ax = plt.subplots()
-Sex = trainDB.groupby('Sex').Survived.sum()*100/trainDB.groupby('Sex').Survived.count()
-ax.bar(Sex.index, Sex.values)
-ax.set(ylim=(0, 100))
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.set_xlabel('Sex')
-ax.set_ylabel('Survived Percentage')
-ax.set_title('Sex vs Survived')
-
-# Visualizing the data of the training set with columns 'Age' and 'Survived'
-fig, ax = plt.subplots(figsize=(12, 4))
-Age = trainDB.groupby('Age').Survived.sum()*100/trainDB.groupby('Age').Survived.count()
-ax.bar(Age.index.astype(int), Age.values, width=0.5)
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.set_xlabel('Age')
-ax.set_ylabel('Survived Percentage')
-ax.set_title('Age vs Survived')
-
-# Visualizing the data of the training set with columns 'SibSp' and 'Survived'
-fig, ax = plt.subplots()
-SibSp = trainDB.groupby('SibSp').Survived.sum()*100/trainDB.groupby('SibSp').Survived.count()
-ax.bar(SibSp.index, SibSp.values)
-ax.set(ylim=(0, 100))
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.set_xlabel('SibSp')
-ax.set_ylabel('Survived Percentage')
-ax.set_title('SibSp vs Survived')
-
-# Visualizing the data of the training set with columns 'Parch' and 'Survived'
-fig, ax = plt.subplots()
-Parch = trainDB.groupby('Parch').Survived.sum()*100/trainDB.groupby('Parch').Survived.count()
-ax.bar(Parch.index, Parch.values)
-ax.set(ylim=(0, 100))
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.set_xlabel('Parch')
-ax.set_ylabel('Survived Percentage')
-ax.set_title('Parch vs Survived')
-
-# Showing the plots
-plt.show()
-
 # Logistic Regression Model
 x = trainDB.drop(['Survived'], axis=1)
 y = trainDB['Survived']
 x = pd.get_dummies(x)
 test = pd.get_dummies(testDB)
 
-model = LogisticRegression()
+model = LogisticRegression(solver='lbfgs', max_iter=1000)
 model.fit(x, y)
 
 y_pred = model.predict(test)
@@ -88,3 +36,59 @@ y_pred = model.predict(test)
 predictions = pd.DataFrame({'PassengerId': testDB['PassengerId'], 'Survived': y_pred})
 predictions.to_csv('predictions.csv', index=False)
 print("Our predictions acuracy is:  0.76555\nCalculated by Kaggle")
+
+def visualize():
+    # Visualizing the data of the training set with columns 'Pclass' and 'Survived'
+    _, ax = plt.subplots()
+    Pclass = trainDB.groupby('Pclass').Survived.sum()*100/trainDB.groupby('Pclass').Survived.count()
+    ax.bar(Pclass.index, Pclass.values)
+    ax.set(ylim=(0, 100))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_xlabel('Pclass')
+    ax.set_ylabel('Survived Percentage')
+    ax.set_title('Pclass vs Survived')
+
+    # Visualizing the data of the training set with columns Sex and Survived
+    _, ax = plt.subplots()
+    Sex = trainDB.groupby('Sex').Survived.sum()*100/trainDB.groupby('Sex').Survived.count()
+    ax.bar(Sex.index, Sex.values)
+    ax.set(ylim=(0, 100))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_xlabel('Sex')
+    ax.set_ylabel('Survived Percentage')
+    ax.set_title('Sex vs Survived')
+
+    # Visualizing the data of the training set with columns 'Age' and 'Survived'
+    _, ax = plt.subplots(figsize=(12, 4))
+    Age = trainDB.groupby('Age').Survived.sum()*100/trainDB.groupby('Age').Survived.count()
+    ax.bar(Age.index.astype(int), Age.values, width=0.5)
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_xlabel('Age')
+    ax.set_ylabel('Survived Percentage')
+    ax.set_title('Age vs Survived')
+
+    # Visualizing the data of the training set with columns 'SibSp' and 'Survived'
+    _, ax = plt.subplots()
+    SibSp = trainDB.groupby('SibSp').Survived.sum()*100/trainDB.groupby('SibSp').Survived.count()
+    ax.bar(SibSp.index, SibSp.values)
+    ax.set(ylim=(0, 100))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_xlabel('SibSp')
+    ax.set_ylabel('Survived Percentage')
+    ax.set_title('SibSp vs Survived')
+
+    # Visualizing the data of the training set with columns 'Parch' and 'Survived'
+    _, ax = plt.subplots()
+    Parch = trainDB.groupby('Parch').Survived.sum()*100/trainDB.groupby('Parch').Survived.count()
+    ax.bar(Parch.index, Parch.values)
+    ax.set(ylim=(0, 100))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_xlabel('Parch')
+    ax.set_ylabel('Survived Percentage')
+    ax.set_title('Parch vs Survived')
+
+    # Showing the plots
+    plt.show()
+
+if __name__ == '__main__':
+    visualize()
