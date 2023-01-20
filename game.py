@@ -107,6 +107,7 @@ def choices(name, passenger):
         else:
             points -= 50
             newparch = int(input("Enter your parent/children count: "))
+            passenger['Parch'] = newparch
             print("Now you have ", points, " points\n")
     else:
         print("Wrong input\n")
@@ -151,6 +152,7 @@ def buy():
     choice = input("Do you want to change your parent/children count? (y/n): ")
     if choice == 'y':
         choices('parch', passenger)
+    print()
     print("Your final attributes:")
     print("Age: ", passenger.iloc[0]['Age'])
     print("Sex: ", passenger.iloc[0]['Sex'])
