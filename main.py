@@ -22,13 +22,13 @@ trainDB["Age"] = trainDB["Age"].replace(np.NaN, trainDB["Age"].mean())
 # print(trainDB.isnull().sum())
 
 # Logistic Regression Model
-x = trainDB.drop(['Survived'], axis=1)
-y = trainDB['Survived']
-x = pd.get_dummies(x)
+train_x = trainDB.drop(['Survived'], axis=1)
+train_y = trainDB['Survived']
+train_x = pd.get_dummies(train_x)
 test = pd.get_dummies(testDB)
 
 model = LogisticRegression(solver='lbfgs', max_iter=1000)
-model.fit(x, y)
+model.fit(train_x, train_y)
 
 y_pred = model.predict(test)
 
