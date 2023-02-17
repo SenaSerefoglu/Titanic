@@ -1,41 +1,119 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
-
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score
+from matplotlib.ticker import MaxNLocator
 
 # Importing the dataset
-testDB = pd.read_csv('test.csv')
-trainDB = pd.read_csv('train.csv')
+testDF = pd.read_csv('test.csv')
+trainDF = pd.read_csv('train.csv')
+#print(trainDF.head())
+#print(trainDF.describe())
+#print(trainDF.nunique())
 
-# Dropping the columns that are not needed
-testDB = testDB.drop(['Ticket', 'Cabin', 'Fare', 'Embarked', 'Name'], axis=1)
-trainDB = trainDB.drop(['Ticket', 'Cabin', 'Fare', 'Embarked', 'Name'], axis=1)
+trainDB = trainDF.copy()
+testDB = testDF.copy()
 
-# Replacing the NaN values with the mean of the column
-testDB["Age"] = testDB["Age"].replace(np.NaN, testDB["Age"].mean())
-trainDB["Age"] = trainDB["Age"].replace(np.NaN, trainDB["Age"].mean())
 
-# Checking for NaN values
-# print(testDB.isnull().sum())
-# print(trainDB.isnull().sum())
+# Save passengerId column for submission
+passengerId = testDF['PassengerId']
 
-# Logistic Regression Model
-train_x = trainDB.drop(['Survived'], axis=1)
-train_y = trainDB['Survived']
-train_x = pd.get_dummies(train_x)
-test = pd.get_dummies(testDB)
 
-model = LogisticRegression(solver='lbfgs', max_iter=1000)
+# Preprocessing
+
+# Deletion of the columns that are not needed
+trainDF.drop(['PassengerId', 'Name', 'Ticket'], axis=1, inplace=True)
+testDF.drop(['PassengerId', 'Name', 'Ticket'], axis=1, inplace=True)
+
+# Check for missing data
+plt.subplot(1, 2, 1)
+sns.heatmap(trainDF.isnull(), yticklabels=False, cbar=False, cmap='viridis')
+plt.subplot(1, 2, 2)
+sns.heatmap(testDF.isnull(), yticklabels=False, cbar=False, cmap='viridis')
+plt.show()
+
+# Drop the Cabin column
+trainDF.drop('Cabin', axis=1, inplace=True)
+testDF.drop('Cabin', axis=1, inplace=True)
+
+# Fill the missing values in the Embarked column in trainDF and Fare column in testDF
+trainDF['Embarked'].fillna(trainDF['Embarked'].mode()[0], inplace=True)
+testDF['Fare'].fillna(testDF['Fare'].mode()[0], inplace=True)
+
+# Append the test data to the train data for age prediction model
+ageDF = pd.concat([trainDF, testDF], axis=0)
+# Drop the Survived column and none values in the age column
+ageDF.drop(['Survived'], axis=1, inplace=True)
+ageDF.dropna(subset=['Age'], inplace=True)
+
+# Creation of dummies for the Embarked and Sex columns for both train and age dataframes
+trainDF = pd.get_dummies(trainDF, columns=['Embarked', 'Sex'])
+ageDF = pd.get_dummies(ageDF, columns=['Embarked', 'Sex'])
+testDF = pd.get_dummies(testDF, columns=['Embarked', 'Sex'])
+
+sns.heatmap(trainDF.corr(), annot=True, cmap='viridis')
+plt.show()
+sns.heatmap(ageDF.corr(), annot=True, cmap='viridis')
+plt.show()
+
+# Spliting the age data into train and test
+train, test = train_test_split(ageDF, test_size=0.3, random_state=42)
+train_x = train.drop(['Age'], axis=1)
+train_y = train['Age']
+test_x = test.drop(['Age'], axis=1)
+test_y = test['Age']
+
+
+# Model Training
+lr = LinearRegression()
+lr.fit(train_x, train_y)
+lr_pred = lr.predict(test_x)
+
+print('Linear Regression')
+print('Mean Squared Error: ', mean_squared_error(test_y, lr_pred))
+print('Mean Absolute Error: ', mean_absolute_error(test_y, lr_pred))
+print('R2 Score: ', r2_score(test_y, lr_pred))
+print()
+
+# Fill the missing values in the age column of trainDF and testDF
+
+# Pull nan values from the age column
+ageNone = trainDF[trainDF['Age'].isnull()]
+# Drop the age column and the survived column
+ageNone.drop(['Age', 'Survived'], axis=1, inplace=True)
+# Predict the age values
+agePred = lr.predict(ageNone)
+# Fill the age column with the predicted values
+trainDF.loc[trainDF['Age'].isnull(), 'Age'] = agePred
+
+# Pull nan values from the age column
+ageNone = testDF[testDF['Age'].isnull()]
+# Drop the age column
+ageNone.drop('Age', axis=1, inplace=True)
+# Predict the age values
+agePred = lr.predict(ageNone)
+# Fill the age column with the predicted values
+testDF.loc[testDF['Age'].isnull(), 'Age'] = agePred
+
+
+# Logistic Regression
+train_x = trainDF.drop(['Survived'], axis=1)
+train_y = trainDF['Survived']
+test_x = testDF
+
+# Model Training
+model = LogisticRegression()
 model.fit(train_x, train_y)
+lr_pred = model.predict(test_x)
 
-y_pred = model.predict(test)
-
-# Creating a csv file with the predictions with headers 'PassengerId' and 'Survived'
-predictions = pd.DataFrame({'PassengerId': testDB['PassengerId'], 'Survived': y_pred})
+# save the predictions to a csv file
+predictions = pd.DataFrame({'PassengerId': passengerId, 'Survived': lr_pred})
 predictions.to_csv('predictions.csv', index=False)
-print("Our predictions accuracy is:  0.76555\nCalculated by Kaggle")
+
 
 def visualize():
     # Visualizing the data of the training set with columns 'Pclass' and 'Survived'
