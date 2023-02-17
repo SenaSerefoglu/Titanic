@@ -34,7 +34,7 @@ plt.subplot(1, 2, 1)
 sns.heatmap(trainDF.isnull(), yticklabels=False, cbar=False, cmap='viridis')
 plt.subplot(1, 2, 2)
 sns.heatmap(testDF.isnull(), yticklabels=False, cbar=False, cmap='viridis')
-plt.show()
+#plt.show()
 
 # Drop the Cabin column
 trainDF.drop('Cabin', axis=1, inplace=True)
@@ -56,9 +56,9 @@ ageDF = pd.get_dummies(ageDF, columns=['Embarked', 'Sex'])
 testDF = pd.get_dummies(testDF, columns=['Embarked', 'Sex'])
 
 sns.heatmap(trainDF.corr(), annot=True, cmap='viridis')
-plt.show()
+#plt.show()
 sns.heatmap(ageDF.corr(), annot=True, cmap='viridis')
-plt.show()
+#plt.show()
 
 # Spliting the age data into train and test
 train, test = train_test_split(ageDF, test_size=0.3, random_state=42)
